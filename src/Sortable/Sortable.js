@@ -5,7 +5,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-console */
 
-import Draggable from '../Draggable';
+import Draggable, {DragStartEvent} from '../Draggable';
 import {SortableStartEvent, SortableSortEvent, SortableSortedEvent, SortableStopEvent} from './SortableEvent';
 
 const onDragStart = Symbol('onDragStart');
@@ -159,21 +159,26 @@ export default class Sortable extends Draggable {
       //   moveWithinContainerCopy(e.target, this.containers[0].children[testIndex - 1]);
       // }
       else if (this.dragging && event.key === 'ArrowDown') {
-        console.log('DRAG START EVENT!!!!');
-        console.log(this.dragStartEvent);
-        const sortableSortEvent = new SortableSortEvent({
-          dragEvent: e,
-          currentIndex: testIndex,
-          source: e.target,
-          over: this.containers[0].children[testIndex + 1],
-        });
-        this.trigger(this.containers, sortableSortEvent);
-
-        onSortableSortedDefaultAnnouncement({dragEvent: 'keyboard'});
         const maxIndex = this.containers[0].children.length - 1;
         const testIndex = Array.prototype.indexOf.call(this.containers[0].children, e.target);
         console.log(testIndex);
         console.log(' KEY EVENT DOWN AND DRAGGABLE');
+
+        const dragStartEvent = new DragStartEvent({
+          clientX: 5,
+          clientY: 7,
+          originalSource: this.originalSource,
+          currentIndex: testIndex,
+          source: e.target,
+          over: this.containers[0].children[testIndex + 1],
+          sensorEvent: {
+            clientX: 5,
+            clientY: 7,
+            originalEvent: {type: "drag:start"}
+          }
+
+        });
+        this.trigger(dragStartEvent);
         if (testIndex < maxIndex) {
           moveWithinContainerCopy(e.target, this.containers[0].children[testIndex + 1]);
           e.target.focus();
