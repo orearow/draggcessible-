@@ -1,3 +1,7 @@
+/* eslint-disable id-length */
+/* eslint-disable prefer-arrow-callback */
+/* eslint-disable prettier/prettier */
+/* eslint-disable no-console */
 import {closest} from 'shared/utils';
 import Sensor from '../Sensor';
 import {DragStartSensorEvent, DragMoveSensorEvent, DragStopSensorEvent} from '../SensorEvent';
@@ -134,6 +138,8 @@ export default class DragSensor extends Sensor {
       event.preventDefault();
       event.dataTransfer.dropEffect = this.options.type;
     }
+
+    console.log(' IN THE DRAGOVER OF DRAG SENSOR');
   }
 
   /**

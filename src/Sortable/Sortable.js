@@ -1,3 +1,11 @@
+/* eslint-disable babel/no-invalid-this */
+/* eslint-disable shopify/prefer-early-return */
+/* eslint-disable id-length */
+/* eslint-disable prefer-arrow-callback */
+/* eslint-disable prettier/prettier */
+/* eslint-disable no-console */
+import {closest} from 'shared/utils';
+
 import Draggable from '../Draggable';
 import {SortableStartEvent, SortableSortEvent, SortableSortedEvent, SortableStopEvent} from './SortableEvent';
 
@@ -12,6 +20,7 @@ const onDragStop = Symbol('onDragStop');
  * @param {SortableSortedEvent} sortableEvent
  * @return {String}
  */
+
 function onSortableSortedDefaultAnnouncement({dragEvent}) {
   const sourceText = dragEvent.source.textContent.trim() || dragEvent.source.id || 'sortable element';
 
@@ -60,7 +69,6 @@ export default class Sortable extends Draggable {
         ...(options.announcements || {}),
       },
     });
-
     /**
      * start index of source on drag start
      * @property startIndex
@@ -85,6 +93,92 @@ export default class Sortable extends Draggable {
       .on('drag:over:container', this[onDragOverContainer])
       .on('drag:over', this[onDragOver])
       .on('drag:stop', this[onDragStop]);
+
+    // /**
+    //    * Key down handler
+    //    * @private
+    //    * @param {Event} event - Key down event
+    //    */
+    //  [onKeyDown](event) {
+    //   // console.log(event);
+    //   const originalSource = closest(event.target, this.options.draggable);
+    //   // console.log(originalSource);
+    //   // console.log('containers children', this.containers[0].children);
+    //   const index = Array.prototype.indexOf.call(this.containers[0].children, originalSource);
+    //   console.log(index);
+    //   // if (event.key === 'Enter') {
+    //   //   this.dragging = !this.dragging;
+    //   //   // console.log(this.dragging);
+    //   // } else if (this.dragging && event.key === 'ArrowUp') {
+    //   //   // console.log('currentContainer', this.currentContainer);
+    //   // }
+    // }
+
+    // document.addEventListener('keydown', (e) => {
+    //   console.log(this.containers[0]);
+    //   console.log(e.target);
+    //   const testIndex = Array.prototype.indexOf.call(this.containers[0].children, e.target);
+    //   console.log(testIndex);
+    //   console.log(this.containers[0].children[testIndex + 1]);
+    //   moveWithinContainerCopy(e.target, this.containers[0].children[testIndex + 1]);
+    //   // console.log(e.ta[0].children);
+    //   // const originalSource = closest(e.target, this.options.draggable);
+    //   // const testIndex = Array.prototype.indexOf.call(this.containers[0].children, originalSource);
+    //   // console.log(testIndex);
+    //   if (e.key === 'Enter') {
+    //     this.dragging = !this.dragging;
+    //     // console.log(this.dragging);
+    //   } else if (this.dragging && event.key === 'ArrowUp') {
+    //     moveWithinContainerCopy(e.target, this.containers[0].children[testIndex + 1]);
+    //   }
+    // });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        console.log(this.dragging);
+        this.dragging = !this.dragging;
+        console.log(this.dragging);
+        const testIndex = Array.prototype.indexOf.call(this.containers[0].children, e.target);
+
+        if (this.dragging) {
+          e.target.childNodes[0].style.backgroundColor = 'yellow';
+        } else {
+          e.target.childNodes[0].style.backgroundColor = 'white';
+        }
+
+        console.log(testIndex);
+      } else if (e.key === 'Tab') {
+        if (this.dragging) {
+          this.dragging = false;
+          e.target.childNodes[0].style.backgroundColor = 'white';
+        }
+      }
+      // else if (this.dragging && event.key === 'ArrowUp') {
+      //   moveWithinContainerCopy(e.target, this.containers[0].children[testIndex - 1]);
+      // }
+      else if (this.dragging && event.key === 'ArrowDown') {
+        const maxIndex = this.containers[0].children.length - 1;
+        const testIndex = Array.prototype.indexOf.call(this.containers[0].children, e.target);
+        console.log(testIndex);
+        console.log(' KEY EVENT DOWN AND DRAGGABLE');
+        if (testIndex < maxIndex) {
+          moveWithinContainerCopy(e.target, this.containers[0].children[testIndex + 1]);
+          e.target.focus();
+        } else {
+          console.log('INDEX MAX');
+        }
+      } else if (this.dragging && event.key === 'ArrowUp') {
+        const testIndex = Array.prototype.indexOf.call(this.containers[0].children, e.target);
+        console.log(testIndex);
+        console.log(' KEY EVENT DOWN AND DRAGGABLE');
+        if (testIndex > 0) {
+          moveWithinContainerCopy(e.target, this.containers[0].children[testIndex + -1]);
+          e.target.focus();
+        } else {
+          console.log('INDEX MAX');
+        }
+      }
+    });
   }
 
   /**
@@ -130,6 +224,8 @@ export default class Sortable extends Draggable {
    * @param {DragStartEvent} event - Drag start event
    */
   [onDragStart](event) {
+    console.log('ON DRAG START EVENT');
+    console.log(event);
     this.startContainer = event.source.parentNode;
     this.startIndex = this.index(event.source);
 
@@ -288,10 +384,25 @@ function moveInsideEmptyContainer(source, overContainer) {
 
   return {oldContainer, newContainer: overContainer};
 }
-
-function moveWithinContainer(source, over) {
+function moveWithinContainerCopy(source, over) {
   const oldIndex = index(source);
   const newIndex = index(over);
+
+  if (oldIndex < newIndex) {
+    source.parentNode.insertBefore(source, over.nextElementSibling);
+  } else {
+    source.parentNode.insertBefore(source, over);
+  }
+
+  return {oldContainer: source.parentNode, newContainer: source.parentNode};
+}
+
+function moveWithinContainer(source, over) {
+  console.log(' IN HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  const oldIndex = index(source);
+  const newIndex = index(over);
+  console.log(source);
+  console.log(over);
 
   if (oldIndex < newIndex) {
     source.parentNode.insertBefore(source, over.nextElementSibling);
