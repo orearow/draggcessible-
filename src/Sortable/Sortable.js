@@ -4,7 +4,6 @@
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-console */
-import {closest} from 'shared/utils';
 
 import Draggable from '../Draggable';
 import {SortableStartEvent, SortableSortEvent, SortableSortedEvent, SortableStopEvent} from './SortableEvent';
@@ -22,6 +21,9 @@ const onDragStop = Symbol('onDragStop');
  */
 
 function onSortableSortedDefaultAnnouncement({dragEvent}) {
+  if (dragEvent === 'keyboard') {
+    return 'Wow in here';
+  }
   const sourceText = dragEvent.source.textContent.trim() || dragEvent.source.id || 'sortable element';
 
   if (dragEvent.over) {
@@ -157,6 +159,17 @@ export default class Sortable extends Draggable {
       //   moveWithinContainerCopy(e.target, this.containers[0].children[testIndex - 1]);
       // }
       else if (this.dragging && event.key === 'ArrowDown') {
+        console.log('DRAG START EVENT!!!!');
+        console.log(this.dragStartEvent);
+        const sortableSortEvent = new SortableSortEvent({
+          dragEvent: e,
+          currentIndex: testIndex,
+          source: e.target,
+          over: this.containers[0].children[testIndex + 1],
+        });
+        this.trigger(this.containers, sortableSortEvent);
+
+        onSortableSortedDefaultAnnouncement({dragEvent: 'keyboard'});
         const maxIndex = this.containers[0].children.length - 1;
         const testIndex = Array.prototype.indexOf.call(this.containers[0].children, e.target);
         console.log(testIndex);

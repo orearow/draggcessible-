@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import AbstractPlugin from 'shared/AbstractPlugin';
 
 const onInitialize = Symbol('onInitialize');
@@ -140,6 +141,8 @@ const liveRegion = createRegion();
  * @param {Number} options.expire
  */
 function announce(message, {expire}) {
+  console.log(' IN THE ANNOUNCEMENT EVENT!');
+  console.log(message);
   const element = document.createElement('div');
 
   element.textContent = message;
