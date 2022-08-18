@@ -3,7 +3,7 @@ import {closest} from 'shared/utils';
 import {Announcement, Focusable, Mirror, Scrollable} from './Plugins';
 
 import Emitter from './Emitter';
-import {MouseSensor, TouchSensor} from './Sensors';
+import {MouseSensor, TouchSensor, KeyboardSensor} from './Sensors';
 import {DraggableInitializedEvent, DraggableDestroyEvent} from './DraggableEvent';
 
 import {
@@ -84,9 +84,10 @@ export default class Draggable {
    * @property {Object} Sensors
    * @property {MouseSensor} Sensors.MouseSensor
    * @property {TouchSensor} Sensors.TouchSensor
+   * @property {KeyboardSensor} Sensors.KeyboardSensor
    * @type {Object}
    */
-  static Sensors = {MouseSensor, TouchSensor};
+  static Sensors = {MouseSensor, TouchSensor, KeyboardSensor};
 
   /**
    * Draggable constructor.
