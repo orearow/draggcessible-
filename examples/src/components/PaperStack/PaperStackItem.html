@@ -5,7 +5,7 @@
   {% set classes = (classes.push(options.classes | join(' ')) if options.classes, classes) %}
   {% set classes = classes | join(' ') | trim %}
 
-  {% set tabIndex = 'tabindex="1"' if options.draggable %}
+  {% set tabIndex = 'tabindex="0"' if options.draggable %}
 
   <li class="{{ classes }}" {{ tabIndex | safe }}>
     <div class="PaperStackContent">
