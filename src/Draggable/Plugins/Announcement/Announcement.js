@@ -102,6 +102,8 @@ export default class Announcement extends AbstractPlugin {
    */
   [announceMessage](message) {
     announce(message, {expire: this.options.expire});
+    console.log(message);
+    console.log(announce(message, {expire: this.options.expire}));
   }
 
   /**

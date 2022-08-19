@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable babel/no-invalid-this */
 /* eslint-disable shopify/prefer-early-return */
 /* eslint-disable id-length */
@@ -5,7 +6,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-console */
 
-import Draggable, {DragStartEvent} from '../Draggable';
+import Draggable, {DragStartEvent, DragStopEvent} from '../Draggable';
 import {SortableStartEvent, SortableSortEvent, SortableSortedEvent, SortableStopEvent} from './SortableEvent';
 
 const onDragStart = Symbol('onDragStart');
@@ -21,6 +22,7 @@ const onDragStop = Symbol('onDragStop');
  */
 
 function onSortableSortedDefaultAnnouncement({dragEvent}) {
+  console.log(dragEvent);
   if (dragEvent === 'keyboard') {
     return 'Wow in here';
   }
@@ -95,15 +97,41 @@ export default class Sortable extends Draggable {
       .on('drag:over:container', this[onDragOverContainer])
       .on('drag:over', this[onDragOver])
       .on('drag:stop', this[onDragStop]);
-
+    let lastEntered;
     document.addEventListener('keydown', (e) => {
+      const indexOfSelectedItem = Array.prototype.indexOf.call(this.containers[0].children, e.target);
+
       if (e.key === 'Enter') {
         this.dragging = !this.dragging;
 
         if (this.dragging) {
+          const dragStartEvent = new DragStartEvent({
+            clientX: 5,
+            clientY: 7,
+            originalSource: this.originalSource,
+            currentIndex: indexOfSelectedItem,
+            source: e.target,
+            over: this.containers[0].children[indexOfSelectedItem + 1],
+            sensorEvent: {
+              clientX: 5,
+              clientY: 7,
+              originalEvent: {type: 'drag:start'},
+            },
+          });
+          this.trigger(dragStartEvent);
           e.target.childNodes[0].style.backgroundColor = '#CBC3E3';
+          lastEntered = e;
         } else {
           e.target.childNodes[0].style.backgroundColor = 'white';
+
+          // dropped item announcement
+          const dragStopEvent = new DragStopEvent({
+            source: e.target,
+            originalSource: e.target,
+            sensorEvent: e,
+            sourceContainer: e.target.parentNode,
+          });
+          this.trigger(dragStopEvent);
         }
       } else if (e.key === 'Tab') {
         if (this.dragging) {
@@ -112,32 +140,44 @@ export default class Sortable extends Draggable {
         }
       } else if (this.dragging && event.key === 'ArrowDown') {
         const maxIndex = this.containers[0].children.length - 1;
-        const indexOfSelectedItem = Array.prototype.indexOf.call(this.containers[0].children, e.target);
-
-        const dragStartEvent = new DragStartEvent({
-          clientX: 5,
-          clientY: 7,
-          originalSource: this.originalSource,
-          currentIndex: indexOfSelectedItem,
-          source: e.target,
-          over: this.containers[0].children[indexOfSelectedItem + 1],
-          sensorEvent: {
-            clientX: 5,
-            clientY: 7,
-            originalEvent: {type: 'drag:start'},
-          },
-        });
-        this.trigger(dragStartEvent);
         if (indexOfSelectedItem < maxIndex) {
-          moveWithinContainer(e.target, this.containers[0].children[indexOfSelectedItem + 1]);
+          moveWithinContainer(e.target, this.containers[0].children[indexOfSelectedItem + -1]);
           e.target.focus();
+
+          // const sortableSortedEvent = new SortableSortedEvent({
+          //   dragEvent: e,
+          //   oldIndex: indexOfSelectedItem,
+          //   newIndex: indexOfSelectedItem + 1,
+          //   oldContainer,
+          //   newContainer,
+          // });
+          // this.trigger(sortableSortedEvent);
         }
       } else if (this.dragging && event.key === 'ArrowUp') {
-        const indexOfSelectedItem = Array.prototype.indexOf.call(this.containers[0].children, e.target);
+        const sortableStartEvent = new SortableStartEvent({
+          dragEvent: e,
+          startIndex: indexOfSelectedItem,
+          startContainer: this.containers,
+        });
+        this.trigger(sortableStartEvent);
         if (indexOfSelectedItem > 0) {
           moveWithinContainer(e.target, this.containers[0].children[indexOfSelectedItem + -1]);
           e.target.focus();
+          // const sortableSortedEvent = new SortableSortedEvent({
+          //   dragEvent: e,
+          //   oldIndex: indexOfSelectedItem,
+          //   newIndex: indexOfSelectedItem - 1,
+          //   oldContainer,
+          //   newContainer,
+          // });
+          // this.trigger(sortableSortedEvent);
         }
+      }
+    });
+    document.addEventListener('mousedown', () => {
+      if (lastEntered) {
+        lastEntered.target.childNodes[0].style.backgroundColor = 'white';
+        lastEntered = null;
       }
     });
   }
