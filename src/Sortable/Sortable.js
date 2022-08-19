@@ -23,8 +23,12 @@ const onDragStop = Symbol('onDragStop');
 
 function onSortableSortedDefaultAnnouncement({dragEvent}) {
   console.log(dragEvent);
-  if (dragEvent === 'keyboard') {
-    return 'Wow in here';
+  if (dragEvent.type === 'keydown') {
+    if (dragEvent.key === 'ArrowDown'){
+      return "Moved item down one space"
+    } else if (dragEvent.key === 'ArrowUp'){
+      return "Moved item up one space"
+    }
   }
   const sourceText = dragEvent.source.textContent.trim() || dragEvent.source.id || 'sortable element';
 
@@ -141,36 +145,30 @@ export default class Sortable extends Draggable {
       } else if (this.dragging && event.key === 'ArrowDown') {
         const maxIndex = this.containers[0].children.length - 1;
         if (indexOfSelectedItem < maxIndex) {
-          moveWithinContainer(e.target, this.containers[0].children[indexOfSelectedItem + -1]);
+          moveWithinContainer(e.target, this.containers[0].children[indexOfSelectedItem + 1]);
           e.target.focus();
 
-          // const sortableSortedEvent = new SortableSortedEvent({
-          //   dragEvent: e,
-          //   oldIndex: indexOfSelectedItem,
-          //   newIndex: indexOfSelectedItem + 1,
-          //   oldContainer,
-          //   newContainer,
-          // });
-          // this.trigger(sortableSortedEvent);
+          const sortableSortedEvent = new SortableSortedEvent({
+            dragEvent: e,
+            oldIndex: indexOfSelectedItem,
+            newIndex: indexOfSelectedItem + 1,
+            // oldContainer,
+            // newContainer,
+          });
+          this.trigger(sortableSortedEvent);
         }
       } else if (this.dragging && event.key === 'ArrowUp') {
-        const sortableStartEvent = new SortableStartEvent({
-          dragEvent: e,
-          startIndex: indexOfSelectedItem,
-          startContainer: this.containers,
-        });
-        this.trigger(sortableStartEvent);
         if (indexOfSelectedItem > 0) {
-          moveWithinContainer(e.target, this.containers[0].children[indexOfSelectedItem + -1]);
+          moveWithinContainer(e.target, this.containers[0].children[indexOfSelectedItem - 1]);
           e.target.focus();
-          // const sortableSortedEvent = new SortableSortedEvent({
-          //   dragEvent: e,
-          //   oldIndex: indexOfSelectedItem,
-          //   newIndex: indexOfSelectedItem - 1,
-          //   oldContainer,
-          //   newContainer,
-          // });
-          // this.trigger(sortableSortedEvent);
+          const sortableSortedEvent = new SortableSortedEvent({
+            dragEvent: e,
+            oldIndex: indexOfSelectedItem,
+            newIndex: indexOfSelectedItem - 1,
+            // oldContainer,
+            // newContainer,
+          });
+          this.trigger(sortableSortedEvent);
         }
       }
     });
