@@ -367,8 +367,6 @@ export default class Draggable {
    * @return {HTMLElement[]}
    */
   getDraggableElements() {
-    console.log('GET DRAGGABLE ELEMENTS');
-
     return this.containers.reduce((current, container) => {
       return [...current, ...this.getDraggableElementsForContainer(container)];
     }, []);
@@ -382,8 +380,6 @@ export default class Draggable {
    */
   getDraggableElementsForContainer(container) {
     const allDraggableElements = container.querySelectorAll(this.options.draggable);
-    console.log('ALL THE DRAGGABLE ELEMENTS');
-    console.log(allDraggableElements);
 
     return [...allDraggableElements].filter((childElement) => {
       return childElement !== this.originalSource && childElement !== this.mirror;

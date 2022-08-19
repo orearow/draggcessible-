@@ -138,8 +138,6 @@ export default class DragSensor extends Sensor {
       event.preventDefault();
       event.dataTransfer.dropEffect = this.options.type;
     }
-
-    console.log(' IN THE DRAGOVER OF DRAG SENSOR');
   }
 
   /**

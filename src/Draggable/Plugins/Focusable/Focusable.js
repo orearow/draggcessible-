@@ -110,7 +110,6 @@ const elementsWithMissingTabIndex = [];
  * @private
  */
 function decorateElement(element) {
-  console.log('IN DECORATE ELEMENT');
   const hasMissingTabIndex = Boolean(!element.getAttribute('tabindex') && element.tabIndex === -1);
 
   if (hasMissingTabIndex) {

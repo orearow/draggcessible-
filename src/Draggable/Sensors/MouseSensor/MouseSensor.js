@@ -75,8 +75,6 @@ export default class MouseSensor extends Sensor {
    * @param {Event} event - Mouse down event
    */
   [onMouseDown](event) {
-    console.log(' IN MOUSE DOWN EVENT');
-    console.log(event);
     if (event.button !== 0 || event.ctrlKey || event.metaKey) {
       return;
     }
